@@ -29,11 +29,11 @@ export default function Analyzer() {
   };
 
   const handleAnalyze = async () => {
-    if (!jd || !file) { 
-      alert("Please enter JD and upload a Resume PDF!"); 
-      return; 
+    if (!jd || !file) {
+      alert("Please enter JD and upload a Resume PDF!");
+      return;
     }
-    setLoading(true); 
+    setLoading(true);
     setResult('');
     setScore(0);
 
@@ -44,28 +44,28 @@ export default function Analyzer() {
         const base64String = reader.result as string;
         const base64Content = base64String.split(',')[1];
         const data = await analyzeResume(jd, base64Content, file.name);
-        
+
         // Extract Score Logic
         const match = data.match(/Match Score:\s*(\d+)%/i);
         const extractedScore = match ? parseInt(match[1]) : 0;
         setScore(extractedScore);
-        
+
         setResult(data);
         setLoading(false);
       };
-    } catch (error) { 
-      console.error("Error:", error); 
-      alert("Analysis failed."); 
-      setLoading(false); 
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Analysis failed.");
+      setLoading(false);
     }
   };
 
   return (
     <main className="min-h-screen bg-gray-50/50 selection:bg-brand-100 selection:text-brand-900">
       <NavBar />
-      
+
       <div className="pt-28 pb-10 max-w-6xl mx-auto px-4 sm:px-6">
-        
+
         {/* Header - Fixed Spacing & &nbsp; */}
         <div className="text-center mb-12 space-y-4">
           <span className="inline-block py-1 px-3 rounded-full bg-brand-50 text-brand-600 text-xs md:text-sm font-semibold tracking-wide border border-brand-100">
@@ -76,7 +76,7 @@ export default function Analyzer() {
             <span className="text-brand-600 inline-block mt-2">
               Score
             </span>
-            &nbsp;&&nbsp; 
+            &nbsp;&&nbsp;
             <span className="text-brand-600 inline-block mt-2">
               Insights
             </span>
@@ -94,13 +94,13 @@ export default function Analyzer() {
               <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               </div>
-              <label className="text-sm font-bold text-gray-900 font-display">Job Description</label>
+              <label className="text-sm font-bold text-gray-900 font-display">Job Description(Text)</label>
             </div>
-            <textarea 
-              className="w-full h-48 md:h-64 p-4 rounded-xl bg-gray-50 border-0 focus:bg-white focus:ring-2 focus:ring-brand-500/20 text-sm leading-relaxed resize-none transition-all placeholder:text-gray-400 text-gray-700" 
-              placeholder="Paste the JD here..." 
-              value={jd} 
-              onChange={(e) => setJd(e.target.value)} 
+            <textarea
+              className="w-full h-48 md:h-64 p-4 rounded-xl bg-gray-50 border-0 focus:bg-white focus:ring-2 focus:ring-brand-500/20 text-sm leading-relaxed resize-none transition-all placeholder:text-gray-400 text-gray-700"
+              placeholder="Paste the JD here..."
+              value={jd}
+              onChange={(e) => setJd(e.target.value)}
             />
           </div>
 
@@ -113,15 +113,15 @@ export default function Analyzer() {
                 </div>
                 <label className="text-sm font-bold text-gray-900 font-display">Your Resume (PDF)</label>
               </div>
-              
+
               <div className="flex-grow w-full h-48 md:h-64 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center bg-gray-50/50 relative overflow-hidden group-hover:border-brand-300 group-hover:bg-brand-50/10 transition-all cursor-pointer">
-                <input 
-                  type="file" 
-                  accept="application/pdf" 
-                  onChange={handleFileChange} 
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" 
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                 />
-                
+
                 <div className="text-center p-6 relative z-10">
                   {file ? (
                     <div className="animate-in fade-in zoom-in duration-300">
@@ -156,9 +156,9 @@ export default function Analyzer() {
 
         {/* Action Button */}
         <div className="text-center mb-16">
-          <button 
-            onClick={handleAnalyze} 
-            disabled={loading} 
+          <button
+            onClick={handleAnalyze}
+            disabled={loading}
             className="w-full md:w-auto px-10 py-4 bg-brand-600 text-white rounded-full font-bold text-lg hover:bg-brand-700 transition shadow-xl disabled:opacity-70 flex items-center justify-center gap-2 mx-auto"
           >
             {loading ? "Analyzing..." : "Check My Score 🚀"}
@@ -168,55 +168,55 @@ export default function Analyzer() {
         {/* Result Section */}
         {result && (
           <div className="animate-fade-in-up space-y-8">
-            
+
             {/* Linear Progress Bar Section */}
             <div className="bg-white p-8 rounded-[2rem] border border-gray-200 shadow-xl relative overflow-hidden">
-               <div className="flex flex-col md:flex-row items-end md:items-center justify-between mb-4 gap-2">
-                  <div>
-                    <h2 className="text-2xl font-display font-bold text-gray-900">Compatibility Score</h2>
-                    <p className="text-gray-500 text-sm mt-1">Match based on JD keywords & skills</p>
-                  </div>
-                  <div className={`px-4 py-2 rounded-xl font-bold text-2xl font-display ${getScoreBg(score)} ${getScoreColor(score)}`}>
-                    {score}%
-                  </div>
-               </div>
+              <div className="flex flex-col md:flex-row items-end md:items-center justify-between mb-4 gap-2">
+                <div>
+                  <h2 className="text-2xl font-display font-bold text-gray-900">Compatibility Score</h2>
+                  <p className="text-gray-500 text-sm mt-1">Match based on JD keywords & skills</p>
+                </div>
+                <div className={`px-4 py-2 rounded-xl font-bold text-2xl font-display ${getScoreBg(score)} ${getScoreColor(score)}`}>
+                  {score}%
+                </div>
+              </div>
 
-               {/* Linear Bar Container */}
-               <div className="w-full h-6 bg-gray-100 rounded-full overflow-hidden relative">
-                 {/* Animated Fill */}
-                 <div 
-                    className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreColor(score).split(' ')[0]}`}
-                    style={{ width: `${score}%` }}
-                 >
-                    {/* Shine Effect */}
-                    <div className="absolute top-0 left-0 bottom-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
-                 </div>
-               </div>
+              {/* Linear Bar Container */}
+              <div className="w-full h-6 bg-gray-100 rounded-full overflow-hidden relative">
+                {/* Animated Fill */}
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreColor(score).split(' ')[0]}`}
+                  style={{ width: `${score}%` }}
+                >
+                  {/* Shine Effect */}
+                  <div className="absolute top-0 left-0 bottom-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
+                </div>
+              </div>
             </div>
 
             {/* Detailed Report */}
             <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-gray-200 shadow-xl">
-               <div className="prose prose-lg max-w-none">
-                 <ReactMarkdown
-                   components={{
-                     h1: ({node, ...props}) => <h1 className="hidden" {...props} />, 
-                     h2: ({node, ...props}) => <h2 className="text-xl font-display font-bold text-brand-800 mt-8 mb-4 border-l-4 border-brand-500 pl-4" {...props} />,
-                     p: ({node, ...props}) => <p className="text-gray-600 text-base leading-relaxed mb-4" {...props} />,
-                     ul: ({node, ...props}) => <ul className="grid grid-cols-1 gap-4 my-6 list-none pl-0" {...props} />,
-                     li: ({node, ...props}) => (
-                       <li className="bg-gray-50 p-5 rounded-2xl border border-gray-100 hover:border-brand-200 transition-colors flex flex-col md:flex-row gap-3 items-start shadow-sm" {...props}>
-                         <div className="mt-1 p-1.5 bg-white rounded-full shadow-sm text-brand-600 shrink-0">
-                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                         </div>
-                         <div className="flex-1 text-sm md:text-base">{props.children}</div>
-                       </li>
-                     ),
-                     strong: ({node, ...props}) => <span className="block text-gray-900 font-bold text-base md:text-lg mb-1" {...props} />,
-                   }}
-                 >
-                   {result}
-                 </ReactMarkdown>
-               </div>
+              <div className="prose prose-lg max-w-none">
+                <ReactMarkdown
+                  components={{
+                    h1: ({ node, ...props }) => <h1 className="hidden" {...props} />,
+                    h2: ({ node, ...props }) => <h2 className="text-xl font-display font-bold text-brand-800 mt-8 mb-4 border-l-4 border-brand-500 pl-4" {...props} />,
+                    p: ({ node, ...props }) => <p className="text-gray-600 text-base leading-relaxed mb-4" {...props} />,
+                    ul: ({ node, ...props }) => <ul className="grid grid-cols-1 gap-4 my-6 list-none pl-0" {...props} />,
+                    li: ({ node, ...props }) => (
+                      <li className="bg-gray-50 p-5 rounded-2xl border border-gray-100 hover:border-brand-200 transition-colors flex flex-col md:flex-row gap-3 items-start shadow-sm" {...props}>
+                        <div className="mt-1 p-1.5 bg-white rounded-full shadow-sm text-brand-600 shrink-0">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <div className="flex-1 text-sm md:text-base">{props.children}</div>
+                      </li>
+                    ),
+                    strong: ({ node, ...props }) => <span className="block text-gray-900 font-bold text-base md:text-lg mb-1" {...props} />,
+                  }}
+                >
+                  {result}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         )}
