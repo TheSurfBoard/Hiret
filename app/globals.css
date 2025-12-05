@@ -1,0 +1,27 @@
+@import url('https://api.fontshare.com/v2/css?f[]=chubbo@700&f[]=supreme@400,500,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  
+  --font-sans: "Supreme", sans-serif;
+  --font-display: "Chubbo", sans-serif;
+
+  
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-500: #266Eea;
+  --color-brand-600: #0052CC;
+  --color-brand-900: #003D99;
+}
+
+/* Default Body Styling */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
