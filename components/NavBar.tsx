@@ -32,7 +32,7 @@ export default function NavBar() {
           {/* --- DESKTOP MENU (Hidden on Mobile) --- */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/#jobs" className="text-gray-600 hover:text-brand-600 font-medium transition">Find Jobs</Link>
-            <Link href="/analyzer" className="text-gray-600 hover:text-brand-600 font-medium transition">JD Analyzer</Link>
+            <Link href="/analyzer" className="text-gray-600 hover:text-brand-600 font-medium transition">Resume Analyzer</Link>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
