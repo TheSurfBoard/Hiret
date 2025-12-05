@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import NavBar from '@/components/NavBar';
+import { checkIsAdmin } from '../actions/checkAdmin'; // Kotha Import (Step 2 nundi)
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -14,7 +15,8 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    // 1. Supabase tho Login Check (Idhi same pathade)
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -22,12 +24,28 @@ export default function LoginPage() {
     if (error) {
       alert("Login Failed: " + error.message);
       setLoading(false);
-    } else {
-      // Success - Go to Admin
-      router.push('/admin');
+      return;
     }
+
+    // 2. Ippudu "Guard" ni adugutham (Server Action)
+    // Ee user email, admin email okkate na?
+    if (data.user?.email) {
+      const isAdmin = await checkIsAdmin(data.user.email);
+
+      if (isAdmin) {
+        // Yes, Nuvve Admin! -> Go to Admin Page
+        router.push('/admin');
+      } else {
+        // Login success kani nuvvu Admin kadu -> Go to Home/Dashboard
+        // Or show error: "You are not authorized"
+        router.push('/'); 
+      }
+    }
+    
+    setLoading(false);
   };
 
+  // Kindha UI code lo em changes levu, as it is ga unchu.
   return (
     <div className="min-h-screen bg-gray-50">
       <NavBar />

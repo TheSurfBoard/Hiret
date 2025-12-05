@@ -4,17 +4,20 @@ import { GoogleGenAI } from "@google/genai";
 
 export async function analyzeResume(jd: string, pdfBase64: string, filename: string) {
   try {
-    // ⚠️ PASTE YOUR KEY HERE
-    const apiKey = "AIzaSyDCPrN2QAIRk6CIZdnv1g68E_hJChXr7ao"; 
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    // Check if key exists
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is missing in .env.local file");
+    }
 
     const client = new GoogleGenAI({ apiKey: apiKey });
 
-    // 🔥 FIX: Using 'gemini-2.0-flash' 
-    // (Idi nee JSON list lo confirm ga undi, so 404 raadhu)
     const modelName = "gemini-2.0-flash"; 
 
     const prompt = `
-      You are an expert Hiring Manager.
+      You are an expert Hiring Manager with 35yrs experience.
+
       
       Job Description: "${jd.slice(0, 3000)}"
       Resume File Name: "${filename}"
@@ -26,9 +29,12 @@ export async function analyzeResume(jd: string, pdfBase64: string, filename: str
       4. Recommended Filename.
       5. Final Verdict.
     `;
-
     const response = await client.models.generateContent({
       model: modelName,
+      // 🔥 CRITICAL FIX: Temperature 0.0 makes it deterministic (Same Input = Same Output)
+      config: {
+        temperature: 0.0,
+      },
       contents: [
         {
           role: 'user',

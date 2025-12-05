@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import NavBar from '@/components/NavBar';
 import { useRouter } from 'next/navigation';
+import { checkIsAdmin } from '@/app/actions/checkAdmin'; // 👈 IMPORT THIS (Path correct ga chusko)
 
 export default function AdminPage() {
   const [loading, setLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false); // 🔒 New Security State
   const [requests, setRequests] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
   const router = useRouter();
@@ -23,13 +25,34 @@ export default function AdminPage() {
   });
 
   useEffect(() => {
-    checkUser();
-    fetchData();
+    verifyAdminAndFetch();
   }, []);
 
-  const checkUser = async () => {
+  // 🔒 THE MAIN SECURITY CHECKPOST
+  const verifyAdminAndFetch = async () => {
+    // 1. Get current logged in user
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) router.push('/login');
+    
+    // 2. Login avvakapothe -> Login page ki po
+    if (!session?.user?.email) {
+      router.push('/login');
+      return;
+    }
+
+    // 3. SERVER CHECK: Veedu Admin eh na? (Server ni adugutham)
+    const isAdmin = await checkIsAdmin(session.user.email);
+
+    if (!isAdmin) {
+      // 🛑 WARNING: Donga user! (Student trying to access admin)
+      alert("🚫 ACCESS DENIED: You are not the Admin!");
+      await supabase.auth.signOut(); // Logout them immediately
+      router.push('/'); // Go Home
+      return;
+    }
+
+    // 4. Success! Admin confirmed.
+    setIsAuthorized(true); // Show page content
+    fetchData(); // Load data
   };
 
   const fetchData = async () => {
@@ -52,11 +75,8 @@ export default function AdminPage() {
     }
   };
 
-  // (Keep handleSubmit, handleDeleteJob, handleMarkDone, handleDeleteRequest, handleLogout SAME as before)
-  // Just keeping the render part updated below:
-
-  // --- ACTIONS
   const handleLogout = async () => { await supabase.auth.signOut(); router.push('/login'); };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true);
     try { const { error } = await supabase.from('jobs').insert([formData]); if (error) throw error; alert("Posted!"); setFormData({ title: '', company: '', location: '', type: 'Full-time', apply_link: '', logo_color: 'bg-blue-100' }); fetchData(); }
@@ -66,6 +86,15 @@ export default function AdminPage() {
   const handleMarkDone = async (id: number) => { await supabase.from('requests').update({ status: 'Completed' }).eq('id', id); fetchData(); };
   const handleDeleteRequest = async (id: number) => { if (!confirm("Delete?")) return; await supabase.from('requests').delete().eq('id', id); fetchData(); };
 
+
+  // 🔒 Prevent flashing: Only show content if authorized
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="font-bold text-gray-400 animate-pulse">Verifying Admin Access...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -79,7 +108,6 @@ export default function AdminPage() {
             Admin <span className="text-brand-600">Dashboard</span>
           </h1>
 
-
           <button
             onClick={handleLogout}
             className="bg-black text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-800 transition shadow-lg flex items-center gap-2"
@@ -88,7 +116,7 @@ export default function AdminPage() {
           </button>
         </div>
 
-        {/* --- 📊 NEW STATS GRID --- */}
+        {/* --- 📊 STATS GRID --- */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
             <p className="text-gray-500 text-xs uppercase font-bold tracking-wider">Active Jobs</p>
