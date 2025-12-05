@@ -3,6 +3,9 @@
 import { GoogleGenAI } from "@google/genai";
 
 export async function analyzeResume(jd: string, pdfBase64: string, filename: string) {
+  // 🔥 FIX: Define modelName outside 'try' so 'catch' block can access it
+  const modelName = "gemini-2.0-flash";
+
   try {
     const apiKey = process.env.GEMINI_API_KEY;
 
@@ -12,8 +15,6 @@ export async function analyzeResume(jd: string, pdfBase64: string, filename: str
     }
 
     const client = new GoogleGenAI({ apiKey: apiKey });
-
-    const modelName = "gemini-2.0-flash"; 
 
     const prompt = `
       You are an expert Hiring Manager with 35yrs experience.
@@ -57,11 +58,11 @@ export async function analyzeResume(jd: string, pdfBase64: string, filename: str
 
   } catch (error: any) {
     console.error("AI Error:", error);
-    
+
     // Error Handling
     if (error.message.includes("404")) return `Error: Model '${modelName}' not found. Check API Key permissions.`;
     if (error.message.includes("429")) return "Error: Server busy (Rate Limit). Please wait 10s.";
-    
+
     return `Error: ${error.message}`;
   }
 }
