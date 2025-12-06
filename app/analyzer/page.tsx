@@ -3,35 +3,19 @@ import React, { useState } from 'react';
 import NavBar from '@/components/NavBar';
 import { analyzeResume } from '../actions';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import Image from 'next/image';
+import remarkGfm from 'remark-gfm'; 
 
 // Helper to get color based on score
 const getScoreColor = (score: number) => {
-  if (score >= 80) return "text-emerald-600 bg-emerald-50 border-emerald-200";
-  if (score >= 50) return "text-amber-600 bg-amber-50 border-amber-200";
-  return "text-rose-600 bg-rose-50 border-rose-200";
+  if (score >= 80) return "bg-emerald-500";
+  if (score >= 50) return "bg-amber-500";
+  return "bg-red-500";
 };
 
-// Circular Progress Component (Better for Mobile than linear)
-const ScoreRing = ({ score }: { score: number }) => {
-  const radius = 30;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-
-  let strokeColor = "text-rose-500";
-  if (score >= 50) strokeColor = "text-amber-500";
-  if (score >= 80) strokeColor = "text-emerald-500";
-
-  return (
-    <div className="relative flex items-center justify-center">
-      <svg className="transform -rotate-90 w-24 h-24">
-        <circle cx="48" cy="48" r={radius} stroke="currentColor" strokeWidth="6" fill="transparent" className="text-gray-100" />
-        <circle cx="48" cy="48" r={radius} stroke="currentColor" strokeWidth="6" fill="transparent" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" className={`${strokeColor} transition-all duration-1000 ease-out`} />
-      </svg>
-      <span className="absolute text-xl font-bold font-display text-gray-900">{score}%</span>
-    </div>
-  );
+const getScoreBg = (score: number) => {
+  if (score >= 80) return "bg-emerald-500";
+  if (score >= 50) return "bg--500";
+  return "bg-red-500";
 };
 
 export default function Analyzer() {
@@ -46,148 +30,224 @@ export default function Analyzer() {
   };
 
   const handleAnalyze = async () => {
-    if (!jd || !file) { alert("Please enter JD and upload a Resume PDF!"); return; }
-    setLoading(true); setResult(''); setScore(0);
+    if (!jd || !file) {
+      alert("Please enter JD and upload a Resume PDF!");
+      return;
+    }
+    setLoading(true);
+    setResult('');
+    setScore(0);
 
     try {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = async () => {
-        const base64Content = (reader.result as string).split(',')[1];
+        const base64String = reader.result as string;
+        const base64Content = base64String.split(',')[1];
         const data = await analyzeResume(jd, base64Content, file.name);
 
-        // 🔥 ROBUST REGEX FIX: Handles newlines, brackets, stars
-        // Looks for "Overall Match" followed by any characters until it hits a number
-        const match = data.match(/Overall Match[:\s\W]*(\d{1,3})/i);
-        if (match && match[1]) {
-          setScore(parseInt(match[1]));
-        } else {
-          setScore(0);
-        }
+        // Extract Score Logic
+        const match = data.match(/Match Score:\s*(\d+)%/i);
+        const extractedScore = match ? parseInt(match[1]) : 0;
+        setScore(extractedScore);
 
         setResult(data);
         setLoading(false);
       };
-    } catch (error) { console.error("Error:", error); alert("Analysis failed."); setLoading(false); }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Analysis failed.");
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 selection:bg-brand-100 selection:text-brand-900 font-sans">
+    <main className="min-h-screen bg-gray-50/50 selection:bg-brand-100 selection:text-brand-900">
       <NavBar />
 
-      <div className="pt-28 pb-10 max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="pt-28 pb-10 max-w-6xl mx-auto px-4 sm:px-6">
 
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-6">
-            <div className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
-              <Image src="/logo.png" alt="Logo" width={48} height={48} className="w-12 h-12 object-contain" />
-            </div>
-          </div>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Resume Analyzer
+        {/* Header - Fixed Spacing & &nbsp; */}
+        <div className="text-center mb-12 space-y-4">
+          <span className="inline-block py-1 px-3 rounded-full bg-brand-50 text-brand-600 text-xs md:text-sm font-semibold tracking-wide border border-brand-100">
+            AI POWERED
+          </span>
+          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight leading-tight">
+            Check Your Resume <br />
+            <span className="text-brand-600 inline-block mt-2">
+              Score
+            </span>
+            &nbsp;&&nbsp;
+            <span className="text-brand-600 inline-block mt-2">
+              Insights
+            </span>
           </h1>
-          <p className="text-gray-500 text-sm md:text-base max-w-lg mx-auto">
-            Paste the JD and upload your resume. We'll give you a combined ATS score and feedback.
+          <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            Paste the Job Description and upload your resume to get a detailed ATS score.
           </p>
         </div>
 
         {/* Input Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm focus-within:ring-2 focus-within:ring-brand-500 transition-all">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2 ml-1">Job Description</label>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* JD Input */}
+          <div className="group bg-white p-5 md:p-6 rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ring-4 ring-transparent focus-within:ring-brand-50/50 focus-within:border-brand-200">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              </div>
+              <label className="text-sm font-bold text-gray-900 font-display">Job Description (Text)</label>
+            </div>
             <textarea
-              className="w-full h-40 bg-transparent border-0 p-0 text-sm resize-none focus:ring-0 text-gray-800 placeholder:text-gray-300"
-              placeholder="Paste JD text here..."
+              className="w-full h-48 md:h-64 p-4 rounded-xl bg-gray-50 border-0 focus:bg-white focus:ring-2 focus:ring-brand-500/20 text-sm leading-relaxed resize-none transition-all placeholder:text-gray-400 text-gray-700"
+              placeholder="Paste the JD here..."
               value={jd}
               onChange={(e) => setJd(e.target.value)}
             />
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-center items-center text-center relative hover:border-brand-300 transition-all">
-            <input type="file" accept="application/pdf" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-            <div className="p-4">
-              {file ? (
-                <div>
-                  <div className="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-                  </div>
-                  <p className="font-bold text-sm text-gray-900 truncate max-w-[150px]">{file.name}</p>
+          {/* File Upload & Privacy Note */}
+          <div className="flex flex-col">
+            <div className="group bg-white p-5 md:p-6 rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col mb-4">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                 </div>
-              ) : (
-                <div>
-                  <div className="w-10 h-10 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-2 border border-gray-100">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
-                  </div>
-                  <p className="font-bold text-sm text-gray-900">Upload PDF</p>
+                <label className="text-sm font-bold text-gray-900 font-display">Your Resume (PDF)</label>
+              </div>
+
+              <div className="flex-grow w-full h-48 md:h-64 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center bg-gray-50/50 relative overflow-hidden group-hover:border-brand-300 group-hover:bg-brand-50/10 transition-all cursor-pointer">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                />
+
+                <div className="text-center p-6 relative z-10">
+                  {file ? (
+                    <div className="animate-in fade-in zoom-in duration-300">
+                      <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-3 text-red-500 border border-red-100">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 2H7a2 2 0 00-2 2v15a2 2 0 002 2z" /></svg>
+                      </div>
+                      <p className="font-bold text-gray-900 truncate max-w-[150px] md:max-w-[200px]">{file.name}</p>
+                      <p className="text-xs text-green-600 mt-1 font-medium">Ready to scan</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4 border border-gray-100 group-hover:scale-110 transition-transform">
+                        <svg className="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                      </div>
+                      <p className="text-gray-900 font-medium text-sm">Upload Resume</p>
+                      <p className="text-xs text-gray-400 mt-1">PDF only (Max 5MB)</p>
+                    </>
+                  )}
                 </div>
-              )}
+              </div>
+            </div>
+
+            {/* Added Privacy Note */}
+            <div className="flex items-start gap-3 px-2">
+              <svg className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                <span className="font-semibold text-gray-500">Privacy Note:</span> We respect your privacy. Resumes are processed in real-time for analysis and are <span className="underline">never stored</span> on our servers.
+              </p>
             </div>
           </div>
         </div>
 
         {/* Action Button */}
-        <button
-          onClick={handleAnalyze}
-          disabled={loading}
-          className="w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition shadow-lg disabled:opacity-70 mb-12 flex items-center justify-center gap-2"
-        >
-          {loading ? "Scanning Resume..." : "Analyze Now ✨"}
-        </button>
+        <div className="text-center mb-16">
+          <button
+            onClick={handleAnalyze}
+            disabled={loading}
+            className="w-full md:w-auto px-10 py-4 bg-brand-600 text-white rounded-full font-bold text-lg hover:bg-brand-700 transition shadow-xl disabled:opacity-70 flex items-center justify-center gap-2 mx-auto"
+          >
+            {loading ? "Analyzing..." : "Check My Score 🚀"}
+          </button>
+        </div>
 
-        {/* 🔥 UNIFIED REPORT CARD (Single Component) */}
+        {/* Result Section */}
         {result && (
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
+          <div className="animate-fade-in-up space-y-8">
 
-            {/* 1. Top Section: Score & Verdict */}
-            <div className="bg-gray-50/50 p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row items-center gap-6 md:gap-8 text-center md:text-left">
-              {/* Score Ring */}
-              <div className="shrink-0">
-                <ScoreRing score={score} />
+            {/* Linear Progress Bar Section */}
+            <div className="bg-white p-8 rounded-[2rem] border border-gray-200 shadow-xl relative overflow-hidden">
+              <div className="flex flex-col md:flex-row items-end md:items-center justify-between mb-4 gap-2">
+                <div>
+                  <h2 className="text-2xl font-display font-bold text-gray-900">Compatibility Score</h2>
+                  <p className="text-gray-500 text-sm mt-1">Match based on JD keywords & skills</p>
+                </div>
+                <div className={`px-4 py-2 rounded-xl font-bold text-2xl font-display ${getScoreBg(score)} ${getScoreColor(score)}`}>
+                  {score}%
+                </div>
               </div>
 
-              {/* Text Info */}
-              <div className="flex-1">
-                <h2 className="text-xl font-display font-bold text-gray-900 mb-2">Analysis Complete</h2>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  We found a <span className={`font-bold ${getScoreColor(score).split(' ')[0]}`}>{score}% match</span> based on the keywords and skills found in your resume compared to the job description.
-                </p>
+              {/* Linear Bar Container */}
+              <div className="w-full h-6 bg-gray-100 rounded-full overflow-hidden relative">
+                {/* Animated Fill */}
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreColor(score).split(' ')[0]}`}
+                  style={{ width: `${score}%` }}
+                >
+                  {/* Shine Effect */}
+                  <div className="absolute top-0 left-0 bottom-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
+                </div>
               </div>
             </div>
 
-            {/* 2. Scrollable Report Body */}
-            <div className="p-6 md:p-8">
-              <div className="prose prose-sm md:prose-base max-w-none text-gray-600">
+            {/* Detailed Report */}
+            <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-gray-200 shadow-xl">
+              <div className="prose prose-lg max-w-none">
                 <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    h1: () => null, // Hide H1
-                    h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-gray-900 mt-8 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2" {...props} />,
-                    // Compact Tables
-                    table: ({ node, ...props }) => <div className="overflow-x-auto my-6 border border-gray-200 rounded-xl"><table className="w-full text-xs md:text-sm text-left" {...props} /></div>,
-                    thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-900 font-bold" {...props} />,
-                    th: ({ node, ...props }) => <th className="px-4 py-3 whitespace-nowrap" {...props} />,
-                    td: ({ node, ...props }) => <td className="px-4 py-3 border-t border-gray-100" {...props} />,
-                    // Clean Lists
-                    ul: ({ node, ...props }) => <ul className="space-y-2 my-4 pl-0 list-none" {...props} />,
-                    li: ({ node, ...props }) => (
-                      <li className="flex items-start gap-3 text-sm bg-gray-50 p-3 rounded-lg border border-transparent hover:border-gray-200 transition-colors" {...props}>
-                        <span className="text-blue-500 mt-0.5">•</span>
-                        <span className="flex-1">{props.children}</span>
-                      </li>
-                    ),
-                    p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
-                    strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
-                  }}
-                >
-                  {result}
+                   remarkPlugins={[remarkGfm]}
+                   components={{
+                  // Headings Style
+                      h1: ({ node, ...props }) => <h1 className="hidden" {...props} />,
+                      h2: ({ node, ...props }) => <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-6 pb-2 border-b border-gray-100 flex items-center gap-2" {...props} />,
+                     h3: ({ node, ...props }) => <h3 className="text-lg font-bold text-blue-600 mt-6 mb-3 uppercase tracking-wide" {...props} />,
+    
+                   // Paragraph Style
+                     p: ({ node, ...props }) => <p className="text-gray-600 text-sm leading-relaxed mb-3" {...props} />,
+    
+                  // Lists -> Cards conversion
+                     ul: ({ node, ...props }) => <ul className="space-y-3 my-4 list-none pl-0" {...props} />,
+                     li: ({ node, ...props }) => (
+                      <li className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-row gap-3 items-start" {...props}>
+                       <div className="mt-0.5 p-1 bg-brand-50 rounded-full text-brand-600 shrink-0">
+                        {/* Chinna Checkmark Icon */}
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                       </div>
+                           {/* Font size taggincha (text-sm) for mobile fit */}
+                       <div className="flex-1 text-sm text-gray-700 leading-snug">{props.children}</div>
+                       </li>
+                      ),
+
+                   // 🔥 TABLES STYLING (Main Update)
+                      table: ({ node, ...props }) => (
+                        <div className="overflow-x-auto my-8 rounded-2xl border border-gray-200 shadow-sm">
+                          <table className="w-full text-sm text-left text-gray-600" {...props} />
+                        </div>
+                         ),
+                      thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-900 font-bold uppercase text-xs" {...props} />,
+                       th: ({ node, ...props }) => <th className="px-6 py-4" {...props} />,
+                       td: ({ node, ...props }) => <td className="px-6 py-4 border-t border-gray-100" {...props} />,
+    
+                  // Verdict Box Style
+                        blockquote: ({ node, ...props }) => (
+                    <div className="bg-blue-50 p-6 rounded-2xl border-l-4 border-blue-500 italic text-blue-900 my-6 font-medium">
+                      {props.children}
+                    </div>
+                     ),
+    
+                     strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
+                     }}
+                      >
+                      {result}
                 </ReactMarkdown>
               </div>
             </div>
-
           </div>
         )}
-
       </div>
     </main>
   );
