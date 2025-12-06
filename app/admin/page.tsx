@@ -21,15 +21,15 @@ export default function AdminPage() {
   });
 
   const [formData, setFormData] = useState({
-  title: '', 
-  company: '', 
-  location: '', 
-  type: 'Full-time', 
-  apply_link: '', 
-  logo_color: 'bg-blue-100',
-  experience: '',       
-  responsibilities: ''  
-    });
+    title: '',
+    company: '',
+    location: '',
+    type: 'Full-time',
+    apply_link: '',
+    logo_color: 'bg-blue-100',
+    experience: '',       // Added Experience
+    responsibilities: ''  // Fixed Bug
+  });
 
   useEffect(() => {
     verifyAdminAndFetch();
@@ -158,7 +158,7 @@ export default function AdminPage() {
                 </div>
                 <div className="flex gap-2">
                   <input type="text" placeholder="Experience" required className="w-full p-3 border rounded-xl" value={formData.experience} onChange={e => setFormData({ ...formData, experience: e.target.value })} />
-               
+
                   <select className="p-3 border rounded-xl flex-1 bg-white" value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
                     <option>Full-time</option><option>Internship</option><option>Contract</option>
                   </select>
