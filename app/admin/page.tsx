@@ -20,15 +20,16 @@ export default function AdminPage() {
     completedRequests: 0
   });
 
-  const [formData, setFormData] = useState({
+  // 🔥 Added <any> to fix type error
+  const [formData, setFormData] = useState<any>({
     title: '',
     company: '',
     location: '',
     type: 'Full-time',
     apply_link: '',
     logo_color: 'bg-blue-100',
-    experience: '',       // Added Experience
-    responsibilities: ''  // Fixed Bug
+    experience: '',       // Experienced added
+    responsibilities: ''  // responsibilites
   });
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function AdminPage() {
     // 1. Get current logged in user
     const { data: { session } } = await supabase.auth.getSession();
 
-    // 2. Login avvakapothe
+    // 2. If login doesnt work
     if (!session?.user?.email) {
       router.push('/login');
       return;
