@@ -13,7 +13,7 @@ interface JobFormData {
   type: string;
   apply_link: string;
   logo_color: string;
-  experience: string;       // Explicitly defined
+  experience: string  // Explicitly defined
 }
 
 export default function AdminPage() {
