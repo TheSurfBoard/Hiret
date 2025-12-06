@@ -17,6 +17,9 @@ export default function JobCard({ role, company, location, type, logoColor = "bg
   
   const [copied, setCopied] = useState(false);
 
+ 
+  const websiteLink = "https://thehiret.vercel.app"; 
+
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
     day: 'numeric', month: 'short', year: 'numeric'
   });
@@ -25,8 +28,8 @@ export default function JobCard({ role, company, location, type, logoColor = "bg
     e.preventDefault(); 
     e.stopPropagation(); 
     
-    //WHATSAPP MESSAGE
-    const message = `*HIRING ALERT*\n\n- Role: *${role}*\n- Company: *${company}*\n- Location: *${location}*\n- Exp: *${experience || "Not Specified"}*\n\n*Apply Link:*\n${applyLink}\n\n_Find more jobs on *Hiret* via *THE SURFBOARD*(on insta)_`;
+    // 🔥 UPDATED: Sends user to Hiret instead of direct application
+    const message = `*HIRING ALERT* \n\nRole: *${role}*\nCompany: *${company}*\nLocation: *${location}*\nExperience: *${experience || "Not specified"}*\n\n *Apply via Hiret:* ${websiteLink}\n\n_Don't apply blindly! Use our AI Resume Analyzer first._`;
     
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -34,7 +37,10 @@ export default function JobCard({ role, company, location, type, logoColor = "bg
   const copyLink = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigator.clipboard.writeText(applyLink);
+
+    // 🔥 UPDATED: Copies Hiret link to clipboard
+    navigator.clipboard.writeText(websiteLink);
+  
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

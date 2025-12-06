@@ -7,8 +7,7 @@ export default function JobFeed({ jobs }: { jobs: any[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("All Types");
 
-  // 🔥 CASE 1: Asalu Jobs ye levu (Database Empty)
-  // Search bar chupinchakunda direct message istham.
+  // Case -1: If no jobs available
   if (!jobs || jobs.length === 0) {
     return (
       <div className="col-span-3 text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200 mb-20">
@@ -18,7 +17,7 @@ export default function JobFeed({ jobs }: { jobs: any[] }) {
     );
   }
 
-  // 🔥 CASE 2: Jobs Unnayi -> Ippudu Search Logic Run avthundi
+  // 🔥 CASE 2: jobs available
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch = 
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -81,7 +80,7 @@ export default function JobFeed({ jobs }: { jobs: any[] }) {
             />
           ))
         ) : (
-           // Case 3: Jobs unnayi kani Search chesthe match avvaledu
+           // Case 3: no matches available to posted jobs
            <div className="col-span-3 text-center py-16 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
              <p className="text-xl font-bold text-gray-900 mb-2">No jobs found 😔</p>
              <p className="text-gray-500">Try adjusting your search or filters.</p>

@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState } from 'react';
 import NavBar from '@/components/NavBar';
@@ -47,7 +48,7 @@ export default function Analyzer() {
         const data = await analyzeResume(jd, base64Content, file.name);
 
         // Extract Score Logic
-        const match = data.match(/Match Score:\s*(\d+)%/i);
+        const match = data.match(/(?:Overall Match|Match Score)[^0-9]*(\d{1,3})/i);
         const extractedScore = match ? parseInt(match[1]) : 0;
         setScore(extractedScore);
 
@@ -197,6 +198,11 @@ export default function Analyzer() {
 
             {/* Detailed Report */}
             <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-gray-200 shadow-xl">
+              <div className="border-b border-gray-100 pb-4 mb-6">
+                <h2 className="font-display text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-2xl">📝</span> Analysis Report
+                </h2>
+              </div>
               <div className="prose prose-lg max-w-none">
                 <ReactMarkdown
                    remarkPlugins={[remarkGfm]}

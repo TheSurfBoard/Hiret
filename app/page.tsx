@@ -28,7 +28,7 @@ export default async function Home() {
           <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
           <h2 className="font-display text-3xl md:text-5xl font-bold mb-6 relative z-10">Don't Apply Blindly! 🛑</h2>
           <p className="text-blue-50 text-lg mb-8 max-w-2xl mx-auto leading-relaxed relative z-10">
-            Get a detailed <strong>ATS Compatibility Score</strong>, identify <strong>Missing Keywords</strong>, and receive <strong>Actionable Feedback</strong>.
+            Check your <strong>ATS Score</strong>, uncover <strong>Missing Keywords</strong>, and <strong>Optimize</strong> your resume instantly.
           </p>
           <Link href="/analyzer" className="inline-block bg-white text-brand-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition shadow-lg relative z-10 transform hover:scale-105 duration-200">
             ✨ Try our Resume Analyzer
