@@ -21,8 +21,15 @@ export default function AdminPage() {
   });
 
   const [formData, setFormData] = useState({
-    title: '', company: '', location: '', type: 'Full-time', apply_link: '', logo_color: 'bg-blue-100'
-  });
+  title: '', 
+  company: '', 
+  location: '', 
+  type: 'Full-time', 
+  apply_link: '', 
+  logo_color: 'bg-blue-100',
+  experience: '',       
+  responsibilities: ''  
+    });
 
   useEffect(() => {
     verifyAdminAndFetch();
