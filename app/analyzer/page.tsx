@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import NavBar from '@/components/NavBar';
 import { analyzeResume } from '../actions';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm'; 
 
 // Helper to get color based on score
 const getScoreColor = (score: number) => {
@@ -198,23 +199,50 @@ export default function Analyzer() {
             <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-gray-200 shadow-xl">
               <div className="prose prose-lg max-w-none">
                 <ReactMarkdown
-                  components={{
-                    h1: ({ node, ...props }) => <h1 className="hidden" {...props} />,
-                    h2: ({ node, ...props }) => <h2 className="text-xl font-display font-bold text-brand-800 mt-8 mb-4 border-l-4 border-brand-500 pl-4" {...props} />,
-                    p: ({ node, ...props }) => <p className="text-gray-600 text-base leading-relaxed mb-4" {...props} />,
-                    ul: ({ node, ...props }) => <ul className="grid grid-cols-1 gap-4 my-6 list-none pl-0" {...props} />,
-                    li: ({ node, ...props }) => (
-                      <li className="bg-gray-50 p-5 rounded-2xl border border-gray-100 hover:border-brand-200 transition-colors flex flex-col md:flex-row gap-3 items-start shadow-sm" {...props}>
-                        <div className="mt-1 p-1.5 bg-white rounded-full shadow-sm text-brand-600 shrink-0">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                   remarkPlugins={[remarkGfm]}
+                   components={{
+                  // Headings Style
+                      h1: ({ node, ...props }) => <h1 className="hidden" {...props} />,
+                      h2: ({ node, ...props }) => <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-6 pb-2 border-b border-gray-100 flex items-center gap-2" {...props} />,
+                     h3: ({ node, ...props }) => <h3 className="text-lg font-bold text-blue-600 mt-6 mb-3 uppercase tracking-wide" {...props} />,
+    
+                   // Paragraph Style
+                     p: ({ node, ...props }) => <p className="text-gray-600 text-sm leading-relaxed mb-3" {...props} />,
+    
+                  // Lists -> Cards conversion
+                     ul: ({ node, ...props }) => <ul className="space-y-3 my-4 list-none pl-0" {...props} />,
+                     li: ({ node, ...props }) => (
+                      <li className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-row gap-3 items-start" {...props}>
+                       <div className="mt-0.5 p-1 bg-brand-50 rounded-full text-brand-600 shrink-0">
+                        {/* Chinna Checkmark Icon */}
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                       </div>
+                           {/* Font size taggincha (text-sm) for mobile fit */}
+                       <div className="flex-1 text-sm text-gray-700 leading-snug">{props.children}</div>
+                       </li>
+                      ),
+
+                   // 🔥 TABLES STYLING (Main Update)
+                      table: ({ node, ...props }) => (
+                        <div className="overflow-x-auto my-8 rounded-2xl border border-gray-200 shadow-sm">
+                          <table className="w-full text-sm text-left text-gray-600" {...props} />
                         </div>
-                        <div className="flex-1 text-sm md:text-base">{props.children}</div>
-                      </li>
-                    ),
-                    strong: ({ node, ...props }) => <span className="block text-gray-900 font-bold text-base md:text-lg mb-1" {...props} />,
-                  }}
-                >
-                  {result}
+                         ),
+                      thead: ({ node, ...props }) => <thead className="bg-gray-50 text-gray-900 font-bold uppercase text-xs" {...props} />,
+                       th: ({ node, ...props }) => <th className="px-6 py-4" {...props} />,
+                       td: ({ node, ...props }) => <td className="px-6 py-4 border-t border-gray-100" {...props} />,
+    
+                  // Verdict Box Style
+                        blockquote: ({ node, ...props }) => (
+                    <div className="bg-blue-50 p-6 rounded-2xl border-l-4 border-blue-500 italic text-blue-900 my-6 font-medium">
+                      {props.children}
+                    </div>
+                     ),
+    
+                     strong: ({ node, ...props }) => <span className="font-bold text-gray-900" {...props} />,
+                     }}
+                      >
+                      {result}
                 </ReactMarkdown>
               </div>
             </div>

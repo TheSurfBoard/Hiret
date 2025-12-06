@@ -10,9 +10,10 @@ interface JobProps {
   logoColor?: string;
   applyLink?: string;
   date: string;
+  experience?: string; // 🔥 Added Experience Prop
 }
 
-export default function JobCard({ role, company, location, type, logoColor = "bg-brand-100", applyLink = "#", date }: JobProps) {
+export default function JobCard({ role, company, location, type, logoColor = "bg-brand-100", applyLink = "#", date, experience }: JobProps) {
   
   const [copied, setCopied] = useState(false);
 
@@ -24,10 +25,8 @@ export default function JobCard({ role, company, location, type, logoColor = "bg
     e.preventDefault(); 
     e.stopPropagation(); 
     
-    // CLEAN & PROFESSIONAL FORMAT (No Emojis)
-    // WhatsApp Bold uses *text*
-    
-    const message = `*HIRING ALERT*\n\n- Role: *${role}*\n- Company: *${company}*\n- Location: *${location}*\n\n*Apply Link:*\n${applyLink}\n\n_Find more jobs on *Hiret* via *THE SURFBOARD*(on insta)_`;
+    //WHATSAPP MESSAGE
+    const message = `*HIRING ALERT*\n\n- Role: *${role}*\n- Company: *${company}*\n- Location: *${location}*\n- Exp: *${experience || "Not Specified"}*\n\n*Apply Link:*\n${applyLink}\n\n_Find more jobs on *Hiret* via *THE SURFBOARD*(on insta)_`;
     
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -46,12 +45,21 @@ export default function JobCard({ role, company, location, type, logoColor = "bg
         
         {/* --- TOP SECTION --- */}
         <div className="flex justify-between items-start mb-4">
-          <div className={`h-12 w-12 rounded-2xl ${logoColor} flex items-center justify-center text-xl font-bold text-brand-600 uppercase`}>
+          <div className={`h-12 w-12 rounded-2xl ${logoColor} flex items-center justify-center text-xl font-bold text-brand-600 uppercase shrink-0`}>
             {company.charAt(0)}
           </div>
-          <span className="px-3 py-1 rounded-full bg-gray-50 text-xs font-semibold text-gray-500 border border-gray-100">
-            {type}
-          </span>
+          
+          {/* 🔥 Badges Container */}
+          <div className="flex flex-col items-end gap-2">
+            <span className="px-3 py-1 rounded-full bg-gray-50 text-xs font-semibold text-gray-500 border border-gray-100 whitespace-nowrap">
+              {type}
+            </span>
+            {experience && (
+              <span className="px-3 py-1 rounded-full bg-purple-50 text-xs font-semibold text-purple-600 border border-purple-100 whitespace-nowrap">
+                💼 {experience}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* --- MIDDLE SECTION --- */}

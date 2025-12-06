@@ -32,18 +32,17 @@ export default function AdminPage() {
   const verifyAdminAndFetch = async () => {
     // 1. Get current logged in user
     const { data: { session } } = await supabase.auth.getSession();
-    
-    // 2. Login avvakapothe -> Login page ki po
+
+    // 2. Login avvakapothe
     if (!session?.user?.email) {
       router.push('/login');
       return;
     }
 
-    // 3. SERVER CHECK: Veedu Admin eh na? (Server ni adugutham)
+    // 3. SERVER CHECK
     const isAdmin = await checkIsAdmin(session.user.email);
 
     if (!isAdmin) {
-      // 🛑 WARNING: Donga user! (Student trying to access admin)
       alert("🚫 ACCESS DENIED: You are not the Admin!");
       await supabase.auth.signOut(); // Logout them immediately
       router.push('/'); // Go Home
@@ -76,7 +75,7 @@ export default function AdminPage() {
   };
 
   const handleLogout = async () => { await supabase.auth.signOut(); router.push('/login'); };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true);
     try { const { error } = await supabase.from('jobs').insert([formData]); if (error) throw error; alert("Posted!"); setFormData({ title: '', company: '', location: '', type: 'Full-time', apply_link: '', logo_color: 'bg-blue-100' }); fetchData(); }
@@ -151,6 +150,8 @@ export default function AdminPage() {
                   <input type="url" placeholder="Apply Link" required className="w-full p-3 border rounded-xl" value={formData.apply_link} onChange={e => setFormData({ ...formData, apply_link: e.target.value })} />
                 </div>
                 <div className="flex gap-2">
+                  <input type="text" placeholder="Experience" required className="w-full p-3 border rounded-xl" value={formData.experience} onChange={e => setFormData({ ...formData, experience: e.target.value })} />
+               
                   <select className="p-3 border rounded-xl flex-1 bg-white" value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
                     <option>Full-time</option><option>Internship</option><option>Contract</option>
                   </select>

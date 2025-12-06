@@ -71,7 +71,7 @@ export default function NavBar() {
         <div className="md:hidden bg-white border-t border-gray-100 animate-fade-in shadow-xl">
           <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
             <Link href="/#jobs" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-lg">Find Jobs</Link>
-            <Link href="/analyzer" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-lg">JD Analyzer</Link>
+            <Link href="/analyzer" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-lg">Resume Analyzer</Link>
             <Link href="/request" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-lg">Request a Job</Link>
             <a href="https://www.instagram.com/the_surfboard" target="_blank" className="block px-3 py-3 text-base font-medium text-pink-600 hover:bg-pink-50 rounded-lg">♥ Support Us</a>
 
