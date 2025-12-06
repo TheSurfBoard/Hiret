@@ -14,7 +14,6 @@ interface JobFormData {
   apply_link: string;
   logo_color: string;
   experience: string;       // Explicitly defined
-  responsibilities: string; // Explicitly defined
 }
 
 export default function AdminPage() {
@@ -40,8 +39,7 @@ export default function AdminPage() {
     type: 'Full-time',
     apply_link: '',
     logo_color: 'bg-blue-100',
-    experience: '',
-    responsibilities: ''
+    experience: ''
   });
 
   useEffect(() => {
