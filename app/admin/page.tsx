@@ -5,6 +5,18 @@ import NavBar from '@/components/NavBar';
 import { useRouter } from 'next/navigation';
 import { checkIsAdmin } from '@/app/actions/checkAdmin'; // 👈 IMPORT THIS (Path correct ga chusko)
 
+// 🔥 Define the structure strictly
+interface JobFormData {
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  apply_link: string;
+  logo_color: string;
+  experience: string;       // Explicitly defined
+  responsibilities: string; // Explicitly defined
+}
+
 export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false); // 🔒 New Security State
@@ -21,15 +33,15 @@ export default function AdminPage() {
   });
 
   // 🔥 Added <any> to fix type error
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState<JobFormData>({
     title: '',
     company: '',
     location: '',
     type: 'Full-time',
     apply_link: '',
     logo_color: 'bg-blue-100',
-    experience: '',       // Experienced added
-    responsibilities: ''  // responsibilites
+    experience: '',
+    responsibilities: ''
   });
 
   useEffect(() => {
