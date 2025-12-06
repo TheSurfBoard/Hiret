@@ -95,15 +95,34 @@ export default function AdminPage() {
   const handleLogout = async () => { await supabase.auth.signOut(); router.push('/login'); };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true);
-    try { const { error } = await supabase.from('jobs').insert([formData]); if (error) throw error; alert("Posted!"); setFormData({ title: '', company: '', location: '', type: 'Full-time', apply_link: '', logo_color: 'bg-blue-100' }); fetchData(); }
-    catch (error: any) { alert(error.message); } finally { setLoading(false); }
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.from('jobs').insert([formData]);
+      if (error) throw error;
+
+      alert("Posted!");
+
+      // 🔥 FIX: Added 'experience' to the reset logic
+      setFormData({
+        title: '',
+        company: '',
+        location: '',
+        type: 'Full-time',
+        apply_link: '',
+        logo_color: 'bg-blue-100',
+        experience: '' // ✅ Added this to satisfy TypeScript
+      });
+
+      fetchData();
+    }
+    catch (error: any) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleDeleteJob = async (id: number) => { if (!confirm("Delete?")) return; await supabase.from('jobs').delete().eq('id', id); fetchData(); };
-  const handleMarkDone = async (id: number) => { await supabase.from('requests').update({ status: 'Completed' }).eq('id', id); fetchData(); };
-  const handleDeleteRequest = async (id: number) => { if (!confirm("Delete?")) return; await supabase.from('requests').delete().eq('id', id); fetchData(); };
-
-
   // 🔒 Prevent flashing: Only show content if authorized
   if (!isAuthorized) {
     return (
