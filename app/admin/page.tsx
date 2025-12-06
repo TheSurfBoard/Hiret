@@ -123,6 +123,25 @@ export default function AdminPage() {
       setLoading(false);
     }
   };
+
+  // 🔥 Paste this RIGHT AFTER handleSubmit function ends
+  const handleDeleteJob = async (id: number) => { 
+    if (!confirm("Delete?")) return; 
+    await supabase.from('jobs').delete().eq('id', id); 
+    fetchData(); 
+  };
+
+  const handleMarkDone = async (id: number) => { 
+    await supabase.from('requests').update({ status: 'Completed' }).eq('id', id); 
+    fetchData(); 
+  };
+
+  const handleDeleteRequest = async (id: number) => { 
+    if (!confirm("Delete?")) return; 
+    await supabase.from('requests').delete().eq('id', id); 
+    fetchData(); 
+  };
+  
   // 🔒 Prevent flashing: Only show content if authorized
   if (!isAuthorized) {
     return (
